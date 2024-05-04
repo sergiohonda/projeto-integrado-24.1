@@ -6,7 +6,7 @@ import numpy as np
 pytesseract.pytesseract.tesseract_cmd = "C:\Program Files\Tesseract-OCR\Tesseract.exe"
 
 # Load the Image File -- Car or Vehicle Image with Number Plate / License Plate Visible
-image = cv2.imread('placa.png')
+image = cv2.imread('placa3.png')
 
 # Convert the image to Grayscale
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -21,12 +21,15 @@ edges = cv2.Canny(blurred, 50, 150)
 contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
 # Filter out small contours which are not needed
-min_area = 500 # you can fine tune this value based on test results
+# min_area = 1000 # you can fine tune this value based on test results
+# Calculate the minimum area based on a percentage of the image size
+image_height, image_width = image.shape[:2]
+min_area_percentage = 0.3  # Adjust this value as needed
+min_area = int(image_height * image_width * min_area_percentage)
+
 valid_contours = []
 for contour in contours:
     (x, y, w, h) = cv2.boundingRect(contour)
-    #print(str(x) + "," + str(y) + "," + str(w) + "," + str(h))
-    #print(cv2.contourArea(contour))
     
     if cv2.contourArea(contour) > min_area:
         valid_contours.append(contour)
